@@ -61,6 +61,8 @@ open class ToastView: UIView {
     }
   }()
 
+    /// A value of 0 disables it, while a value of 0 or greater makes a margin on both sides of the view. The size of the toast is fixed.
+    @objc open dynamic var horizontalityMargin: CGFloat = 0.0
 
   // MARK: UI
 
@@ -108,22 +110,24 @@ open class ToastView: UIView {
 
   override open func layoutSubviews() {
     super.layoutSubviews()
+    
     let containerSize = ToastWindow.shared.frame.size
+    let widthLimitSize = containerSize.width - (self.horizontalityMargin * 2.0)
     let constraintSize = CGSize(
-      width: containerSize.width * (280.0 / 320.0),
+      width: (self.horizontalityMargin == 0.0) ? (containerSize.width * (280.0 / 320.0)) : widthLimitSize - (self.textInsets.left + self.textInsets.right),
       height: CGFloat.greatestFiniteMagnitude
     )
     let textLabelSize = self.textLabel.sizeThatFits(constraintSize)
     self.textLabel.frame = CGRect(
       x: self.textInsets.left,
       y: self.textInsets.top,
-      width: textLabelSize.width,
+      width: (self.horizontalityMargin == 0.0) ? textLabelSize.width : constraintSize.width,
       height: textLabelSize.height
     )
     self.backgroundView.frame = CGRect(
       x: 0,
       y: 0,
-      width: self.textLabel.frame.size.width + self.textInsets.left + self.textInsets.right,
+      width: (self.horizontalityMargin == 0.0) ? self.textLabel.frame.size.width + self.textInsets.left + self.textInsets.right : widthLimitSize,
       height: self.textLabel.frame.size.height + self.textInsets.top + self.textInsets.bottom
     )
 
