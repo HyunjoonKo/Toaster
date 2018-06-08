@@ -95,10 +95,12 @@ open class ToastWindow: UIWindow {
       self.isHidden = true
       self.isHidden = false
     }
-
+    
+    // TODO: This code causes an app crash. ex) When used in completionWithItemsHandler of UIActivityViewController.
+    /*
     if #available(iOS 11, *), let keyboardWindow = UIApplication.shared.windows.last, NSStringFromClass(type(of: keyboardWindow)) == "UIRemoteKeyboardWindow" {
       keyboardWindow.addSubview(self)
-    }
+    }*/
   }
 
   @objc dynamic func statusBarOrientationWillChange() {
