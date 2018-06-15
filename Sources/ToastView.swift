@@ -8,7 +8,11 @@ open class ToastView: UIView {
     get { return self.textLabel.text }
     set { self.textLabel.text = newValue }
   }
-
+    
+  open var attributedText: NSAttributedString? {
+      get { return self.textLabel.attributedText }
+      set { self.textLabel.attributedText = newValue }
+  }
 
   // MARK: Appearance
 

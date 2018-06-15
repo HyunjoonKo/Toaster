@@ -13,6 +13,11 @@ open class Toast: Operation {
     get { return self.view.text }
     set { self.view.text = newValue }
   }
+    
+  public var attributedText: NSAttributedString? {
+      get { return self.view.attributedText }
+      set { self.view.attributedText = newValue }
+  }
 
   public var delay: TimeInterval
   public var duration: TimeInterval
@@ -54,6 +59,13 @@ open class Toast: Operation {
     self.duration = duration
     super.init()
     self.text = text
+  }
+    
+  public init(attributedText: NSAttributedString?, delay: TimeInterval = 0, duration: TimeInterval = Delay.short) {
+      self.delay = delay
+      self.duration = duration
+      super.init()
+      self.attributedText = attributedText
   }
 
 
