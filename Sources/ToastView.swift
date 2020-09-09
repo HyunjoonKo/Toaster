@@ -48,9 +48,11 @@ open class ToastView: UIView {
     switch UIDevice.current.userInterfaceIdiom {
     case .unspecified: return 30
     case .phone: return 30
-    case .pad: return 60
+    case .pad, .mac: return 60
     case .tv: return 90
     case .carPlay: return 30
+    @unknown default:
+        return 30
     }
   }()
 
@@ -59,9 +61,11 @@ open class ToastView: UIView {
     switch UIDevice.current.userInterfaceIdiom {
     case .unspecified: return 20
     case .phone: return 20
-    case .pad: return 40
+    case .pad, .mac: return 40
     case .tv: return 60
     case .carPlay: return 20
+    @unknown default:
+        return 20
     }
   }()
 
@@ -85,9 +89,11 @@ open class ToastView: UIView {
       switch UIDevice.current.userInterfaceIdiom {
       case .unspecified: return .systemFont(ofSize: 12)
       case .phone: return .systemFont(ofSize: 12)
-      case .pad: return .systemFont(ofSize: 16)
+      case .pad, .mac: return .systemFont(ofSize: 16)
       case .tv: return .systemFont(ofSize: 20)
       case .carPlay: return .systemFont(ofSize: 12)
+      @unknown default:
+        return .systemFont(ofSize: 12)
       }
     }()
     self.numberOfLines = 0
