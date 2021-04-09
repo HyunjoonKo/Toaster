@@ -176,7 +176,7 @@ open class ToastView: UIView {
     let containerSize = ToastWindow.shared.frame.size
     let widthLimitSize = containerSize.width - (self.horizontalityMargin * 2.0)
     let constraintSize = CGSize(
-      width: (self.horizontalityMargin == 0.0) ? (containerSize.width * (280.0 / 320.0)) : widthLimitSize - (containerSize.width * maxWidthRatio - self.textInsets.left - self.textInsets.right),
+      width: (self.horizontalityMargin == 0.0) ? (containerSize.width * maxWidthRatio - self.textInsets.left - self.textInsets.right) : widthLimitSize - (self.textInsets.left + self.textInsets.right),
       height: CGFloat.greatestFiniteMagnitude
     )
     let textLabelSize = self.textLabel.sizeThatFits(constraintSize)
