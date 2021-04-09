@@ -173,7 +173,12 @@ open class ToastView: UIView {
   override open func layoutSubviews() {
     super.layoutSubviews()
     
-    let containerSize = ToastWindow.shared.frame.size
+    var containerSize = ToastWindow.shared.frame.size
+    if containerSize.height < 280.0 {
+      let screenSize = UIScreen.main.bounds
+      ToastWindow.shared.frame = screenSize
+      containerSize = screenSize.size
+    }
     let widthLimitSize = containerSize.width - (self.horizontalityMargin * 2.0)
     let constraintSize = CGSize(
       width: (self.horizontalityMargin == 0.0) ? (containerSize.width * maxWidthRatio - self.textInsets.left - self.textInsets.right) : widthLimitSize - (self.textInsets.left + self.textInsets.right),
@@ -204,8 +209,13 @@ open class ToastView: UIView {
       height = containerSize.height
       y = self.bottomOffsetPortrait
     } else {
-      width = containerSize.height
-      height = containerSize.width
+      if containerSize.height > containerSize.width {
+          width = containerSize.height
+          height = containerSize.width
+      } else {
+          width = containerSize.width
+          height = containerSize.height
+      }
       y = self.bottomOffsetLandscape
     }
     if #available(iOS 11.0, *), useSafeAreaForBottomOffset {
