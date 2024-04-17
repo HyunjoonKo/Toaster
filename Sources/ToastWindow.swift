@@ -2,10 +2,20 @@ import UIKit
 
 open class ToastWindow: UIWindow {
   
+  // MARK: - Class Property
+  
+  class var keyWindow: UIWindow? {
+    if #available(iOS 15.0, *) {
+      return UIApplication.shared.connectedScenes.compactMap({ ($0 as? UIWindowScene)?.keyWindow }).last
+    } else {
+      return UIApplication.shared.windows.last(where: { $0.isKeyWindow })
+    }
+  }
+  
   // MARK: - Public Property  
   
-  public static let shared = ToastWindow(frame: UIScreen.main.bounds, mainWindow: UIApplication.shared.keyWindow)
-  
+  public static let shared = ToastWindow(frame: UIScreen.main.bounds, mainWindow: ToastWindow.keyWindow)
+
   override open var rootViewController: UIViewController? {
     get {
       guard !self.isShowing else {
@@ -35,7 +45,7 @@ open class ToastWindow: UIWindow {
   /// Don't rotate manually if the application:
   ///
   /// - is running on iPad
-  /// - is running on iOS 9
+  /// - is running on iOS 13
   /// - supports all orientations
   /// - doesn't require full screen
   /// - has launch storyboard
@@ -56,10 +66,17 @@ open class ToastWindow: UIWindow {
     return true
   }
   
+  var orientation: UIInterfaceOrientation {
+    if #available(iOS 13.0, *) {
+      return self.mainWindow?.windowScene?.interfaceOrientation ?? self.windowScene?.interfaceOrientation ?? .portrait
+    } else {
+      return UIApplication.shared.statusBarOrientation
+    }
+  }
   
   // MARK: - Private Property
   
-  /// Will not return `rootViewController` while this value is `true`. Or the rotation will be fucked in iOS 9.
+  /// Will not return `rootViewController` while this value is `true`. Or the rotation will be fucked in iOS 13.
   private var isStatusBarOrientationChanging = false
   
   /// Will not return `rootViewController` while this value is `true`. Needed for iOS 13.
@@ -96,7 +113,7 @@ open class ToastWindow: UIWindow {
     #endif
     self.backgroundColor = .clear
     self.isHidden = false
-    self.handleRotate(UIApplication.shared.statusBarOrientation)
+    self.handleRotate(self.orientation)
 
     NotificationCenter.default.addObserver(
       self,
@@ -156,13 +173,13 @@ open class ToastWindow: UIWindow {
   }
 
   @objc private func statusBarOrientationDidChange() {
-    let orientation = UIApplication.shared.statusBarOrientation
+    let orientation = self.orientation
     self.handleRotate(orientation)
     self.isStatusBarOrientationChanging = false
   }
 
   @objc private func applicationDidBecomeActive() {
-    let orientation = UIApplication.shared.statusBarOrientation
+    let orientation = self.orientation
     self.handleRotate(orientation)
   }
 

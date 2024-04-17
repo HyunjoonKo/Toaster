@@ -118,7 +118,7 @@ open class ToastView: UIView {
     get { return self.layer.shadowRadius }
     set { self.layer.shadowRadius = newValue }
   }
-
+  
   // MARK: UI
 
   private let backgroundView: UIView = {
@@ -188,13 +188,13 @@ open class ToastView: UIView {
     self.textLabel.frame = CGRect(
       x: self.textInsets.left,
       y: self.textInsets.top,
-      width: (self.horizontalityMargin == 0.0) ? textLabelSize.width : constraintSize.width,
+      width: textLabelSize.width,
       height: textLabelSize.height
     )
     self.backgroundView.frame = CGRect(
       x: 0,
       y: 0,
-      width: (self.horizontalityMargin == 0.0) ? self.textLabel.frame.size.width + self.textInsets.left + self.textInsets.right : widthLimitSize,
+      width: self.textLabel.frame.size.width + self.textInsets.left + self.textInsets.right,
       height: self.textLabel.frame.size.height + self.textInsets.top + self.textInsets.bottom
     )
 
@@ -203,7 +203,7 @@ open class ToastView: UIView {
     var width: CGFloat
     var height: CGFloat
 
-    let orientation = UIApplication.shared.statusBarOrientation
+    let orientation = ToastWindow.shared.orientation
     if orientation.isPortrait || !ToastWindow.shared.shouldRotateManually {
       width = containerSize.width
       height = containerSize.height
