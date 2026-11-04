@@ -177,6 +177,9 @@ open class ToastView: UIView {
       guard #available(iOS 16.0, *), let window = self.superview as? UIWindow, !(window is ToastWindow) else { return nil }
       return window
     }()
+    // A toast already on screen is not laid out again when its window resizes (its own size does not change).
+    // Keep it horizontally centered with the same bottom offset until the next layout.
+    autoresizingMask = hostWindow != nil ? [.flexibleLeftMargin, .flexibleRightMargin, .flexibleTopMargin] : []
     var containerSize = hostWindow?.bounds.size ?? ToastWindow.shared.frame.size
     if hostWindow == nil, containerSize.height < 280.0 {
       let screenSize = UIScreen.main.bounds
