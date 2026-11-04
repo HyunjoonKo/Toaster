@@ -173,15 +173,25 @@ open class ToastView: UIView {
   override open func layoutSubviews() {
     super.layoutSubviews()
     
-    var containerSize = ToastWindow.shared.frame.size
-    if containerSize.height < 280.0 {
+    // iOS 16+ never rotates the toast window manually, so lay out against the window the toast is
+    // actually attached to. `ToastWindow.shared.frame` only follows status bar orientation notifications
+    // and goes stale when the window just resizes (e.g. iPhone Duo fold/unfold).
+    let hostWindow: UIWindow? = {
+      guard #available(iOS 16.0, *), let window = self.superview as? UIWindow, !(window is ToastWindow) else { return nil }
+      return window
+    }()
+    var containerSize = hostWindow?.bounds.size ?? ToastWindow.shared.frame.size
+    if hostWindow == nil, containerSize.height < 280.0 {
       let screenSize = UIScreen.main.bounds
       ToastWindow.shared.frame = screenSize
       containerSize = screenSize.size
     }
-    let widthLimitSize = containerSize.width - (self.horizontalityMargin * 2.0)
+    // The text width keeps following the short side in manually handled landscape, as the shared toast window did.
+    let isManualLandscape = !ToastWindow.shared.orientation.isPortrait && ToastWindow.shared.shouldRotateManually
+    let textContainerWidth = (hostWindow != nil && isManualLandscape) ? min(containerSize.width, containerSize.height) : containerSize.width
+    let widthLimitSize = textContainerWidth - (self.horizontalityMargin * 2.0)
     let constraintSize = CGSize(
-      width: (self.horizontalityMargin == 0.0) ? (containerSize.width * maxWidthRatio - self.textInsets.left - self.textInsets.right) : widthLimitSize - (self.textInsets.left + self.textInsets.right),
+      width: (self.horizontalityMargin == 0.0) ? (textContainerWidth * maxWidthRatio - self.textInsets.left - self.textInsets.right) : widthLimitSize - (self.textInsets.left + self.textInsets.right),
       height: CGFloat.greatestFiniteMagnitude
     )
     let textLabelSize = self.textLabel.sizeThatFits(constraintSize)
@@ -219,7 +229,7 @@ open class ToastView: UIView {
       y = self.bottomOffsetLandscape
     }
     if #available(iOS 11.0, *), useSafeAreaForBottomOffset {
-      y += ToastWindow.shared.safeAreaInsets.bottom
+      y += (hostWindow ?? ToastWindow.shared).safeAreaInsets.bottom
     }
 
     let backgroundViewSize = self.backgroundView.frame.size
